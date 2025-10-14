@@ -16,3 +16,8 @@ Serving on port `5500` by default. A custom port can be specified by invoking:
 python server.py [port number]
 ```
 
+
+## Alternatives
+
+[ome_zarr_py](https://github.com/ome/ome-zarr-py) implements a CLI tool for serving and viewing Zarr files (Invocation: `ome_zarr view [OMEZarrFile]`). This may be more convenient to use in some circumstances, as it opens the image through the ngff-validator frontend, from where multiple viewers (Vizarr, Vol-E, Neuroglancer, napari) are available at a mouseclick to display a Zarr image. 
+
