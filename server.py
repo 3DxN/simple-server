@@ -95,7 +95,7 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         super().end_headers()
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 5500
     server_address = ('', port)
     httpd = ThreadedHTTPServer(server_address, RangeRequestHandler)
