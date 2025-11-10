@@ -19,5 +19,27 @@ python server.py [port number]
 
 ## Alternatives
 
-[ome_zarr_py](https://github.com/ome/ome-zarr-py) implements a CLI tool for serving and viewing Zarr files (Invocation: `ome_zarr view [OMEZarrFile]`). This may be more convenient to use in some circumstances, as it opens the image through the ngff-validator frontend, from where multiple viewers (Vizarr, Vol-E, Neuroglancer, napari) are available at a mouseclick to display a Zarr image. 
+- [ome_zarr_py](https://github.com/ome/ome-zarr-py) implements a CLI tool for serving and viewing Zarr files (Invocation: `ome_zarr view [OMEZarrFile]`) - based on Python HTTPSimpleServer as above. This may be more convenient to use in some circumstances, as it opens the image through the ngff-validator frontend, from where multiple viewers (Vizarr, Vol-E, Neuroglancer, napari) are available at a mouseclick to display a Zarr image. 
 
+- Ruby's standard library implements a simple https server. Configuring header injection (e.g., CORS) may be done with a simple script:
+```
+ruby -rwebrick -e '
+  root = Dir.pwd
+  server = WEBrick::HTTPServer.new(
+    Port: 8000,
+    DocumentRoot: root,
+    AccessLog: [],               # silence WEBrick’s default log (optional)
+    Logger: WEBrick::Log.new("/dev/null") # silence startup banner (optional)
+  )
+  # Insert a generic CORS header on every response
+  server.mount_proc "/" do |req, res|
+    res["Access-Control-Allow-Origin"] = "*"
+    res["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    res["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept"
+    # Let WEBrick handle the actual file serving
+    WEBrick::HTTPServlet::FileHandler.new(server, root).service(req, res)
+  end
+  trap("INT") { server.shutdown }
+  server.start
+'
+```
